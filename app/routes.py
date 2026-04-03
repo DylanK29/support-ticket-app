@@ -116,7 +116,7 @@ def create_ticket():
             description=description,
             priority=priority,
             category=category,
-            status=Status.OPEN,
+            status=Status.NEW,
             creator_id=current_user.id,
             assignee_id=assignee_id
         )

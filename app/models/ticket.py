@@ -74,7 +74,7 @@ class Ticket(db.Model):
     description = db.Column(db.Text, nullable=False)
     priority = db.Column(db.Enum(Priority), default=Priority.MEDIUM, nullable=False)
     category = db.Column(db.Enum(Category), default=Category.OTHER, nullable=False)
-    status = db.Column(db.Enum(Status), default=Status.OPEN, nullable=False, index=True)
+    status = db.Column(db.Enum(Status), default=Status.NEW, nullable=False, index=True)
     
     #Foreign keys
     creator_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False, index=True)
@@ -145,7 +145,7 @@ class Ticket(db.Model):
         self.assignee_id = user.id if user else None
         
         #Optionally update status when assigned
-        if user and self.status == Status.OPEN:
+        if user and self.status == Status.NEW:
             if assigned_by:
                 self.update_status(Status.IN_PROGRESS, assigned_by)
             else:

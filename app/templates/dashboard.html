@@ -48,12 +48,14 @@
             <tr>
                 <td><a href="{{ url_for('main.ticket_detail', ticket_id=ticket.id) }}">{{ ticket.title }}</a></td>
                 <td>
-                    {% if ticket.status.value == 'open' %}
-                        <span class="badge bg-primary">Open</span>
+                    {% if ticket.status.value == 'new' %}
+                        <span class="badge bg-primary">New</span>
                     {% elif ticket.status.value == 'in_progress' %}
                         <span class="badge bg-info">In Progress</span>
-                    {% elif ticket.status.value == 'pending' %}
-                        <span class="badge bg-warning text-dark">Pending</span>
+                    {% elif ticket.status.value == 'waiting_on_user' %}
+                        <span class="badge bg-warning text-dark">Waiting on User</span>
+                    {% elif ticket.status.value == 'blocked' %}
+                        <span class="badge bg-danger">Blocked</span>
                     {% elif ticket.status.value == 'resolved' %}
                         <span class="badge bg-success">Resolved</span>
                     {% elif ticket.status.value == 'closed' %}
