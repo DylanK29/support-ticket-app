@@ -8,11 +8,13 @@
 
 <div class="card mb-4">
     <div class="card-body">
-        <form method="GET" action="{{ url_for('main.dashboard') }}" class="row g-3 align-items-center">
-            <div class="col-auto">
-                <label for="status" class="form-label mb-0">Filter by Status:</label>
+        <form method="GET" action="{{ url_for('main.dashboard') }}" class="row g-3 align-items-end">
+            <div class="col-md-4">
+                <label for="search" class="form-label">Search</label>
+                <input type="text" class="form-control" id="search" name="search" placeholder="Search title or description..." value="{{ search_query or '' }}">
             </div>
-            <div class="col-auto">
+            <div class="col-md-3">
+                <label for="status" class="form-label">Status</label>
                 <select name="status" id="status" class="form-select">
                     <option value="all" {% if not current_status or current_status == 'all' %}selected{% endif %}>All</option>
                     <option value="new" {% if current_status == 'new' %}selected{% endif %}>New</option>
@@ -23,8 +25,11 @@
                     <option value="closed" {% if current_status == 'closed' %}selected{% endif %}>Closed</option>
                 </select>
             </div>
-            <div class="col-auto">
-                <button type="submit" class="btn btn-primary">Filter</button>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">Search</button>
+            </div>
+            <div class="col-md-2">
+                <a href="{{ url_for('main.dashboard') }}" class="btn btn-secondary w-100">Clear</a>
             </div>
         </form>
     </div>

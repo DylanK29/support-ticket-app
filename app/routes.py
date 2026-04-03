@@ -76,19 +76,33 @@ def logout():
 def dashboard():
     #Main dashboard showing all tickets
     status_filter = request.args.get('status')
+    search_query = request.args.get('search')
     
+    #Start with all tickets
+    query = Ticket.query
+    
+    #Apply status filter
     if status_filter and status_filter != 'all':
-        #Convert string to Status enum
         try:
             status_enum = Status(status_filter)
-            tickets = Ticket.query.filter_by(status=status_enum).order_by(Ticket.created_date.desc()).all()
+            query = query.filter_by(status=status_enum)
         except ValueError:
-            tickets = Ticket.query.order_by(Ticket.created_date.desc()).all()
-    else:
-        tickets = Ticket.query.order_by(Ticket.created_date.desc()).all()
+            pass
     
+    #Apply search filter
+    if search_query:
+        search_term = f'%{search_query}%'
+        query = query.filter(
+            db.or_(
+                Ticket.title.ilike(search_term),
+                Ticket.description.ilike(search_term)
+            )
+        )
+    
+    tickets = query.order_by(Ticket.created_date.desc()).all()
     users = User.query.all()
-    return render_template('dashboard.html', tickets=tickets, users=users, current_status=status_filter)
+    
+    return render_template('dashboard.html', tickets=tickets, users=users, current_status=status_filter, search_query=search_query)
 
 @main.route('/tickets/create', methods=['GET', 'POST'])
 @login_required
@@ -116,7 +130,7 @@ def create_ticket():
             description=description,
             priority=priority,
             category=category,
-            status=Status.NEW,
+            status='new',
             creator_id=current_user.id,
             assignee_id=assignee_id
         )

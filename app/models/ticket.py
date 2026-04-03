@@ -23,10 +23,10 @@ class Priority(str, Enum):
 class Category(str, Enum):
     #Ticket categories.
     BUG = 'bug'
-    FEATURE = 'feature'
-    SUPPORT = 'support'
-    QUESTION = 'question'
-    ENHANCEMENT = 'enhancement'
+    USER_SUPPORT = 'user_support'
+    DATA_ISSUE = 'data_issue'
+    FEATURE_REQUEST = 'feature_request'
+    ACCESS_PERMISSIONS = 'access_permissions'
     OTHER = 'other'
     
     def __str__(self):
