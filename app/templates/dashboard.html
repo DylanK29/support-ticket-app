@@ -1,0 +1,85 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Support Tickets</h2>
+    <a href="{{ url_for('main.create_ticket') }}" class="btn btn-success">Create Ticket</a>
+</div>
+
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('main.dashboard') }}" class="row g-3 align-items-center">
+            <div class="col-auto">
+                <label for="status" class="form-label mb-0">Filter by Status:</label>
+            </div>
+            <div class="col-auto">
+                <select name="status" id="status" class="form-select">
+                    <option value="all" {% if not current_status or current_status == 'all' %}selected{% endif %}>All</option>
+                    <option value="new" {% if current_status == 'new' %}selected{% endif %}>New</option>
+                    <option value="in_progress" {% if current_status == 'in_progress' %}selected{% endif %}>In Progress</option>
+                    <option value="waiting_on_user" {% if current_status == 'waiting_on_user' %}selected{% endif %}>Waiting on User</option>
+                    <option value="blocked" {% if current_status == 'blocked' %}selected{% endif %}>Blocked</option>
+                    <option value="resolved" {% if current_status == 'resolved' %}selected{% endif %}>Resolved</option>
+                    <option value="closed" {% if current_status == 'closed' %}selected{% endif %}>Closed</option>
+                </select>
+            </div>
+            <div class="col-auto">
+                <button type="submit" class="btn btn-primary">Filter</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% if tickets %}
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>Title</th>
+                <th>Status</th>
+                <th>Priority</th>
+                <th>Category</th>
+                <th>Assignee</th>
+                <th>Created</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ticket in tickets %}
+            <tr>
+                <td><a href="{{ url_for('main.ticket_detail', ticket_id=ticket.id) }}">{{ ticket.title }}</a></td>
+                <td>
+                    {% if ticket.status.value == 'open' %}
+                        <span class="badge bg-primary">Open</span>
+                    {% elif ticket.status.value == 'in_progress' %}
+                        <span class="badge bg-info">In Progress</span>
+                    {% elif ticket.status.value == 'pending' %}
+                        <span class="badge bg-warning text-dark">Pending</span>
+                    {% elif ticket.status.value == 'resolved' %}
+                        <span class="badge bg-success">Resolved</span>
+                    {% elif ticket.status.value == 'closed' %}
+                        <span class="badge bg-secondary">Closed</span>
+                    {% endif %}
+                </td>
+                <td>
+                    {% if ticket.priority.value == 'urgent' %}
+                        <span class="text-danger fw-bold">Urgent</span>
+                    {% elif ticket.priority.value == 'high' %}
+                        <span class="text-warning fw-bold">High</span>
+                    {% elif ticket.priority.value == 'medium' %}
+                        <span>Medium</span>
+                    {% else %}
+                        <span class="text-muted">Low</span>
+                    {% endif %}
+                </td>
+                <td>{{ ticket.category.value | replace('_', ' ') | title }}</td>
+                <td>{{ ticket.assignee.name if ticket.assignee else 'Unassigned' }}</td>
+                <td>{{ ticket.created_date.strftime('%Y-%m-%d %H:%M') }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="alert alert-info">No tickets found.</div>
+{% endif %}
+{% endblock %}
