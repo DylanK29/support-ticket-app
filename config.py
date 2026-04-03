@@ -1,45 +1,40 @@
 #Flask Configuration Module
-#Loads settings from environment variables with fallback defaults
 
 import os
 from pathlib import Path
+from dotenv import load_dotenv
 
-BASE_DIR = Path(__file__).resolve().parent #Base directory of the project
+load_dotenv()
 
-class Config: #Base configuration class
-    SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production') #Secret key for session management and CSRF protection
-    SQLALCHEMY_DATABASE_URI = os.environ.get(
-        'DATABASE_URL',
-        f'sqlite:///{BASE_DIR / "app.db"}'
-    ) #SQLAchemy Database URI
+BASE_DIR = Path(__file__).resolve().parent
 
-    SQLALCHEMY_TRACK_MODIFICATIONS = False #Disable track modifications to save resources
-
-class DevelopmentConfig(Config): #Development configuration
-    DEBUG = True #Enable debug mode for development
-
-class ProductionConfig(Config): #Production configuration
-    DEBUG = False #Disable debug mode for production
-
-    @property
-    def SECRET_KEY(self):
-        #Ensure SECRET_KEY is set in production
-        secret = os.environ.get('SECRET_KEY')
-        if not secret:
-            raise ValueError("SECRET_KEY environment variable must be set in production")
-        return secret
-    
-    @property
-    def SQLALCHEMY_DATABASE_URI(self):
-        #Handle Render's postgres:// vs postgresql://
-        database_url = os.environ.get('DATABASE_URL')
-        if database_url and database_url.startswith('postgres://'):
+def get_database_url():
+    #Get database URL, fixing Render's postgres:// prefix
+    database_url = os.environ.get('DATABASE_URL')
+    if database_url:
+        if database_url.startswith('postgres://'):
             database_url = database_url.replace('postgres://', 'postgresql://', 1)
         return database_url
+    return f'sqlite:///{BASE_DIR / "app.db"}'
 
-class TestingConfig(Config): #Testing configuration
-    TESTING = True #Enable testing mode
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:' #Use in-memory database for testing
+class Config:
+    #Base configuration class
+    SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-secret-key-change-in-production')
+    SQLALCHEMY_DATABASE_URI = get_database_url()
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+
+class DevelopmentConfig(Config):
+    #Development configuration
+    DEBUG = True
+
+class ProductionConfig(Config):
+    #Production configuration
+    DEBUG = False
+
+class TestingConfig(Config):
+    #Testing configuration
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
 
 #Configuration dictionary for easy access
 config = {
