@@ -41,11 +41,11 @@ class Comment(db.Model):
     
     def can_edit(self, user):
         #Check if user can edit this comment.
-        return user.id == self.user_id or user.is_admin()
+        return user.id == self.user_id or user.has_admin_role()
     
     def can_delete(self, user):
         #Check if user can delete this comment.
-        return user.id == self.user_id or user.is_admin()
+        return user.id == self.user_id or user.has_admin_role()
     
     def to_dict(self):
         #Convert comment to dictionary.

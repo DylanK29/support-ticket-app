@@ -116,7 +116,7 @@ class Ticket(db.Model):
     def can_edit(self, user):
         #Check if user can edit this ticket.
         return (
-            user.is_admin() or
+            user.has_admin_role() or
             user.id == self.creator_id or
             user.id == self.assignee_id
         )

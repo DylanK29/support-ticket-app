@@ -297,7 +297,7 @@ def get_suggested_response(ticket_id):
 @login_required
 def admin_panel():
     #Admin panel - only accessible by admins
-    if not current_user.is_admin:
+    if not current_user.has_admin_role:
         flash('Access denied. Admin privileges required.', 'error')
         return redirect(url_for('main.dashboard'))
     
@@ -311,7 +311,7 @@ def admin_panel():
 @login_required
 def toggle_admin(user_id):
     #Toggle admin status for a user
-    if not current_user.is_admin:
+    if not current_user.has_admin_role:
         flash('Access denied.', 'error')
         return redirect(url_for('main.dashboard'))
     
@@ -322,10 +322,10 @@ def toggle_admin(user_id):
         flash('Cannot modify your own admin status.', 'error')
         return redirect(url_for('main.admin_panel'))
     
-    user.is_admin = not user.is_admin
+    user.has_admin_role = not user.has_admin_role
     db.session.commit()
     
-    status = 'admin' if user.is_admin else 'regular user'
+    status = 'admin' if user.has_admin_role else 'regular user'
     flash(f'{user.name} is now a {status}.', 'success')
     return redirect(url_for('main.admin_panel'))
 
@@ -333,7 +333,7 @@ def toggle_admin(user_id):
 @login_required
 def email_log():
     #View sent email notifications
-    if not current_user.is_admin:
+    if not current_user.has_admin_role:
         flash('Access denied.', 'error')
         return redirect(url_for('main.dashboard'))
     

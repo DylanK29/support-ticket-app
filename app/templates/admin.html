@@ -45,7 +45,7 @@
                     <td>{{ user.name }}</td>
                     <td>{{ user.email }}</td>
                     <td>
-                        {% if user.is_admin %}
+                        {% if user.has_admin_role %}
                             <span class="badge bg-danger">Admin</span>
                         {% else %}
                             <span class="badge bg-secondary">User</span>
@@ -54,7 +54,7 @@
                     <td>
                         {% if user.id != current_user.id %}
                         <form method="POST" action="{{ url_for('main.toggle_admin', user_id=user.id) }}" style="display: inline;">
-                            {% if user.is_admin %}
+                            {% if user.has_admin_role %}
                                 <button type="submit" class="btn btn-sm btn-warning">Remove Admin</button>
                             {% else %}
                                 <button type="submit" class="btn btn-sm btn-success">Make Admin</button>
