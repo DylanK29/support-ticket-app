@@ -78,6 +78,12 @@ def dashboard():
     status_filter = request.args.get('status')
     search_query = request.args.get('search')
     
+    #Calculate metrics
+    total_tickets = Ticket.query.count()
+    new_tickets = Ticket.query.filter_by(status=Status.NEW).count()
+    in_progress_tickets = Ticket.query.filter_by(status=Status.IN_PROGRESS).count()
+    resolved_tickets = Ticket.query.filter_by(status=Status.RESOLVED).count()
+    
     #Start with all tickets
     query = Ticket.query
     
@@ -102,7 +108,17 @@ def dashboard():
     tickets = query.order_by(Ticket.created_date.desc()).all()
     users = User.query.all()
     
-    return render_template('dashboard.html', tickets=tickets, users=users, current_status=status_filter, search_query=search_query)
+    return render_template(
+        'dashboard.html',
+        tickets=tickets,
+        users=users,
+        current_status=status_filter,
+        search_query=search_query,
+        total_tickets=total_tickets,
+        new_tickets=new_tickets,
+        in_progress_tickets=in_progress_tickets,
+        resolved_tickets=resolved_tickets
+    )
 
 @main.route('/tickets/create', methods=['GET', 'POST'])
 @login_required
