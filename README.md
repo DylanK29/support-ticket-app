@@ -15,6 +15,10 @@ https://support-ticket-app-ftx6.onrender.com
 - Freeform search bar to search tickets by title or description
 - View ticket details
 - Select tickets to update status and assignee, add comments, and track status changes
+- Simulated email notification system
+- Admin access to tickets and emails
+- AI generated label suggestions, ticket summaries, and suggested replies
+- Attachment support
 
 ## Technology Stack
 
@@ -86,6 +90,8 @@ https://support-ticket-app-ftx6.onrender.com
 support-ticket-app/
 ├── app/
 │   ├── __init__.py             #App factory
+│   ├── ai_helper.py            #AI generation functions
+│   ├── email_helper.py         #Email simulation functions
 │   ├── routes.py               #Route handlers
 │   ├── models/
 │   │   ├── __init__.py
@@ -94,10 +100,12 @@ support-ticket-app/
 │   │   ├── comment.py          #Comment model
 │   │   └── ticket_history.py   #History tracking model
 │   └── templates/
+│       ├── admin.html           
 │       ├── base.html           #Base template with navbar
 │       ├── login.html
 │       ├── register.html
 │       ├── dashboard.html      #Ticket list with filters
+│       ├── email_log.html           
 │       ├── create_ticket.html
 │       └── ticket_detail.html
 ├── config.py                   #Configuration classes
@@ -120,3 +128,4 @@ This app follows a Model-View-Controller pattern:
 | SECRET_KEY | Flask secret key for sessions |
 | DATABASE_URL | PostgreSQL connection string (for production) |
 | FLASK_ENV | For development or production |
+| OPENAI_API_KEY | For accessing Open AI LLM |
