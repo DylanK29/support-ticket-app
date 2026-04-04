@@ -55,7 +55,7 @@ class User(UserMixin, db.Model):
         return check_password_hash(self.password_hash, password)
     
     #Role helper methods
-    def is_admin(self):
+    def has_admin_role(self):
         #Check if user is an admin.
         return self.role == Role.ADMIN
     
