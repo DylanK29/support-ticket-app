@@ -30,6 +30,13 @@ def create_app(config_name=None):
     #Create tables
     with app.app_context():
         db.create_all()
+
+    #Create uploads folder
+    uploads_folder = os.path.join(app.root_path, 'static', 'uploads')
+    if not os.path.exists(uploads_folder):
+        os.makedirs(uploads_folder)
+    app.config['UPLOAD_FOLDER'] = uploads_folder
+    app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  #16MB max
     
     return app
 

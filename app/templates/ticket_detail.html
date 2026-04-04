@@ -212,6 +212,33 @@
                 {% endif %}
             </div>
         </div>
+
+        <div class="card mb-4">
+            <div class="card-header">Attachments</div>
+            <div class="card-body">
+                {% set attachments = ticket.get_attachments() %}
+                {% if attachments %}
+                    <ul class="list-group mb-3">
+                        {% for attachment in attachments %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ attachment.split('_', 2)[2] if '_' in attachment else attachment }}
+                            <a href="{{ url_for('static', filename='uploads/' + attachment) }}" class="btn btn-sm btn-outline-primary" target="_blank">Download</a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                {% else %}
+                    <p class="text-muted">No attachments.</p>
+                {% endif %}
+                
+                <form method="POST" action="{{ url_for('main.upload_attachment', ticket_id=ticket.id) }}" enctype="multipart/form-data">
+                    <div class="input-group">
+                        <input type="file" class="form-control" name="file" accept=".png,.jpg,.jpeg,.gif,.pdf,.doc,.docx,.txt">
+                        <button type="submit" class="btn btn-outline-secondary">Upload</button>
+                    </div>
+                    <small class="text-muted">Allowed: PNG, JPG, GIF, PDF, DOC, DOCX, TXT (max 16MB)</small>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}

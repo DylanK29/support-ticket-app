@@ -163,6 +163,23 @@ class Ticket(db.Model):
         db.session.add(comment)
         return comment
     
+    #Attachments stored as JSON list of filenames
+    attachments = db.Column(db.Text, nullable=True)
+
+    def get_attachments(self):
+        #Get list of attachments
+        import json
+        if self.attachments:
+            return json.loads(self.attachments)
+        return []
+
+    def add_attachment(self, filename):
+        #Add an attachment
+        import json
+        attachments = self.get_attachments()
+        attachments.append(filename)
+        self.attachments = json.dumps(attachments)
+    
 
     @property
     def comment_count(self):

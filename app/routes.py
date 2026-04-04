@@ -1,10 +1,11 @@
 #Application Routes
-
+import os
 from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
 from app import db
 from app.models import User, Ticket, Comment, TicketHistory
 from app.models.ticket import Priority, Category, Status
+from werkzeug.utils import secure_filename
 
 main = Blueprint('main', __name__)
 
@@ -340,3 +341,43 @@ def email_log():
     emails = get_sent_emails()
     
     return render_template('email_log.html', emails=emails)
+
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'pdf', 'doc', 'docx', 'txt'}
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@main.route('/tickets/<int:ticket_id>/upload', methods=['POST'])
+@login_required
+def upload_attachment(ticket_id):
+    #Upload attachment to ticket
+    ticket = Ticket.query.get_or_404(ticket_id)
+    
+    if 'file' not in request.files:
+        flash('No file selected.', 'error')
+        return redirect(url_for('main.ticket_detail', ticket_id=ticket_id))
+    
+    file = request.files['file']
+    
+    if file.filename == '':
+        flash('No file selected.', 'error')
+        return redirect(url_for('main.ticket_detail', ticket_id=ticket_id))
+    
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        #Add timestamp to make unique
+        import time
+        unique_filename = f"{ticket_id}_{int(time.time())}_{filename}"
+        
+        from flask import current_app
+        filepath = os.path.join(current_app.config['UPLOAD_FOLDER'], unique_filename)
+        file.save(filepath)
+        
+        ticket.add_attachment(unique_filename)
+        db.session.commit()
+        
+        flash('File uploaded successfully!', 'success')
+    else:
+        flash('File type not allowed.', 'error')
+    
+    return redirect(url_for('main.ticket_detail', ticket_id=ticket_id))
