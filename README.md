@@ -18,53 +18,14 @@ https://support-ticket-app-ftx6.onrender.com
 
 ## Technology Stack
 
-|
- Layer 
-|
- Technology 
-|
-
-|
--------
-|
-------------
-|
-
-|
- Backend 
-|
- Python, Flask 
-|
-
-|
- Database 
-|
- PostgreSQL (production), SQLite (development) 
-|
-
-|
- ORM 
-|
- SQLAlchemy 
-|
-
-|
- Authentication 
-|
- Flask-Login 
-|
-
-|
- Frontend 
-|
- HTML, Jinja2, Bootstrap 5 
-|
-
-|
- Deployment 
-|
- Render.com 
-|
+| Layer | Technology |
+|----------------|----------------|
+| Backend | Python, Flask |
+| Database | PostgreSQL (production), SQLite (development) |
+| ORM | SQLAlchemy |
+| Authentication | Flask-Login |
+| Frontend | HTML, Jinja2, Bootstrap 5 |
+| Deployment | Render.com |
 
 
 ## Ticket Statuses
@@ -96,23 +57,33 @@ https://support-ticket-app-ftx6.onrender.com
 ### Installation
 
 1. Clone the repository
+```bash
    git clone https://github.com/DylanK29/support-ticket-app.git
    cd ticket-tracker
+```
 2. Create and activate virtual environments
+```bash
     conda create -n ticket-app python=3.11
     conda activate ticket-app
+```
 3. Install Dependencies
+```bash
     pip install -r requirements.txt
+```
 4. Create .env file in project root:
+```bash   
     SECRET_KEY=your-secret-key
     FLASK_ENV=development
+```    
 5. Run the application
+```bash    
     python run.py
+```    
 6. Open http://127.0.0.1:5000/ in your browser
 
 ## Project Structure
-
-ticket-tracker/
+```bash
+support-ticket-app/
 ├── app/
 │   ├── __init__.py             #App factory
 │   ├── routes.py               #Route handlers
@@ -134,7 +105,7 @@ ticket-tracker/
 ├── requirements.txt            #Python dependencies
 ├── Procfile                    #Deployment config
 └── README.md
-
+```
 ## Architecture
 
 This app follows a Model-View-Controller pattern:
@@ -144,6 +115,8 @@ This app follows a Model-View-Controller pattern:
 
 ## Environment Variables
 
-SECRET_KEY ==> Flask secret key for sessions
-DATABASE_URL ==> PostgreSQL connection string (for production)
-FLASK_ENV ==> For development or production
+| Variable | Description |
+|---------------|---------------|
+| SECRET_KEY | Flask secret key for sessions |
+| DATABASE_URL | PostgreSQL connection string (for production) |
+| FLASK_ENV | For development or production |
