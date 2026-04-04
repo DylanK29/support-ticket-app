@@ -1,6 +1,6 @@
 #Application Routes
 
-from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask import Blueprint, render_template, redirect, url_for, flash, request, jsonify
 from flask_login import login_user, logout_user, login_required, current_user
 from app import db
 from app.models import User, Ticket, Comment, TicketHistory
@@ -224,3 +224,22 @@ def add_comment(ticket_id):
     
     flash('Comment added!', 'success')
     return redirect(url_for('main.ticket_detail', ticket_id=ticket_id))
+
+@main.route('/api/suggest', methods=['POST'])
+@login_required
+def suggest_category():
+    #Get AI suggestions for ticket category and priority
+    from app.ai_helper import get_ai_suggestions
+    
+    title = request.form.get('title', '')
+    description = request.form.get('description', '')
+    
+    if not title or not description:
+        return jsonify({'error': 'Title and description required'}), 400
+    
+    suggestions = get_ai_suggestions(title, description)
+    
+    if suggestions:
+        return jsonify(suggestions)
+    else:
+        return jsonify({'error': 'Could not get suggestions'}), 500

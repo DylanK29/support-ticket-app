@@ -17,6 +17,15 @@
                         <label for="description" class="form-label">Description</label>
                         <textarea class="form-control" id="description" name="description" rows="4" required></textarea>
                     </div>
+                    <div class="mb-3">
+                        <button type="button" id="suggestBtn" class="btn btn-outline-primary btn-sm">
+                            ✨ Get AI Suggestions
+                        </button>
+                        <span id="suggestLoading" class="ms-2 text-muted" style="display: none;">
+                            <span class="spinner-border spinner-border-sm"></span> Analyzing...
+                        </span>
+                        <div id="suggestResult" class="alert alert-info mt-2" style="display: none;"></div>
+                    </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label for="priority" class="form-label">Priority</label>
@@ -57,4 +66,63 @@
         </div>
     </div>
 </div>
+<script>
+document.getElementById('suggestBtn').addEventListener('click', function() {
+    const title = document.getElementById('title').value;
+    const description = document.getElementById('description').value;
+    
+    if (!title || !description) {
+        alert('Please enter a title and description first.');
+        return;
+    }
+    
+    const btn = this;
+    const loading = document.getElementById('suggestLoading');
+    const result = document.getElementById('suggestResult');
+    
+    btn.disabled = true;
+    loading.style.display = 'inline';
+    result.style.display = 'none';
+    
+    const formData = new FormData();
+    formData.append('title', title);
+    formData.append('description', description);
+    
+    fetch('{{ url_for("main.suggest_category") }}', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        btn.disabled = false;
+        loading.style.display = 'none';
+        
+        if (data.error) {
+            result.className = 'alert alert-warning mt-2';
+            result.textContent = 'Could not get suggestions. Please select manually.';
+        } else {
+            result.className = 'alert alert-info mt-2';
+            result.innerHTML = '<strong>AI Suggestion:</strong> ' + 
+                'Category: <strong>' + data.category + '</strong>, ' +
+                'Priority: <strong>' + data.priority + '</strong><br>' +
+                '<small>' + data.reason + '</small><br>' +
+                '<button type="button" class="btn btn-sm btn-primary mt-2" onclick="applySuggestions(\'' + data.category + '\', \'' + data.priority + '\')">Apply Suggestions</button>';
+        }
+        result.style.display = 'block';
+    })
+    .catch(error => {
+        btn.disabled = false;
+        loading.style.display = 'none';
+        result.className = 'alert alert-warning mt-2';
+        result.textContent = 'Error getting suggestions.';
+        result.style.display = 'block';
+    });
+});
+
+function applySuggestions(category, priority) {
+    document.getElementById('category').value = category;
+    document.getElementById('priority').value = priority;
+    document.getElementById('suggestResult').innerHTML += '<br><span class="text-success">✓ Applied!</span>';
+}
+</script>
 {% endblock %}
