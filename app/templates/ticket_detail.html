@@ -101,7 +101,46 @@
             });
         });
         </script>
+        <div class="mb-3">
+            <button type="button" id="suggestResponseBtn" class="btn btn-outline-secondary btn-sm">
+                ✨ Suggest Response
+            </button>
+            <span id="responseLoading" class="ms-2 text-muted" style="display: none;">
+                <span class="spinner-border spinner-border-sm"></span> Thinking...
+            </span>
+        </div>
 
+        <script>
+        document.getElementById('suggestResponseBtn').addEventListener('click', function() {
+            const btn = this;
+            const loading = document.getElementById('responseLoading');
+            const textarea = document.querySelector('textarea[name="content"]');
+            
+            btn.disabled = true;
+            loading.style.display = 'inline';
+            
+            fetch('{{ url_for("main.get_suggested_response", ticket_id=ticket.id) }}', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                btn.disabled = false;
+                loading.style.display = 'none';
+                
+                if (data.response) {
+                    textarea.value = data.response;
+                    textarea.focus();
+                } else {
+                    alert('Could not generate suggestion.');
+                }
+            })
+            .catch(error => {
+                btn.disabled = false;
+                loading.style.display = 'none';
+                alert('Error generating suggestion.');
+            });
+        });
+        </script>
         <div class="card mb-4">
             <div class="card-header">Comments</div>
             <div class="card-body">

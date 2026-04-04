@@ -259,3 +259,23 @@ def get_ticket_summary(ticket_id):
         return jsonify({'summary': summary})
     else:
         return jsonify({'error': 'Could not generate summary'}), 500
+    
+@main.route('/api/tickets/<int:ticket_id>/suggest-response', methods=['POST'])
+@login_required
+def get_suggested_response(ticket_id):
+    #Generate AI suggested response for a ticket
+    from app.ai_helper import suggest_response
+    
+    ticket = Ticket.query.get_or_404(ticket_id)
+    
+    response = suggest_response(
+        ticket.title,
+        ticket.description,
+        ticket.category.value,
+        ticket.status.value
+    )
+    
+    if response:
+        return jsonify({'response': response})
+    else:
+        return jsonify({'error': 'Could not generate response'}), 500

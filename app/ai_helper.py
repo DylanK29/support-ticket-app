@@ -103,3 +103,38 @@ def generate_ticket_summary(title, description, comments):
     except Exception as e:
         print(f"AI summary error: {e}")
         return None
+    
+def suggest_response(title, description, category, status):
+    #Suggest a response for the ticket
+    
+    api_key = os.environ.get('OPENAI_API_KEY')
+    if not api_key:
+        return None
+    
+    try:
+        client = OpenAI(api_key=api_key)
+        
+        prompt = f"""You are a helpful IT support agent. Suggest a professional response for this ticket:
+
+            Title: {title}
+            Description: {description}
+            Category: {category}
+            Status: {status}
+
+            Write a helpful, professional response (2-3 sentences) that:
+            1. Acknowledges the issue
+            2. Provides next steps or asks for more information
+            3. Is friendly and professional"""
+
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=200,
+            temperature=0.7
+        )
+        
+        return response.choices[0].message.content.strip()
+    
+    except Exception as e:
+        print(f"AI response error: {e}")
+        return None
