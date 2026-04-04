@@ -328,18 +328,6 @@ def toggle_admin(user_id):
     flash(f'{user.name} is now a {status}.', 'success')
     return redirect(url_for('main.admin_panel'))
 
-@main.route('/make-me-admin')
-@login_required
-def make_me_admin():
-    #Temporary route - remove after first use
-    if User.query.filter_by(is_admin=True).count() == 0:
-        current_user.is_admin = True
-        db.session.commit()
-        flash('You are now an admin!', 'success')
-    else:
-        flash('Admin already exists.', 'error')
-    return redirect(url_for('main.dashboard'))
-
 @main.route('/admin/emails')
 @login_required
 def email_log():
