@@ -174,6 +174,8 @@ def ticket_detail(ticket_id):
 @login_required
 def update_ticket(ticket_id):
     #Update ticket status and assignee
+    from app.email_helper import send_ticket_assigned_notification, send_ticket_status_notification
+    
     ticket = Ticket.query.get_or_404(ticket_id)
     
     new_status_value = request.form.get('status')
@@ -188,7 +190,7 @@ def update_ticket(ticket_id):
     else:
         new_assignee_id = int(new_assignee_id)
     
-    #Record status change in history
+    #Record status change in history and send notification
     if ticket.status != new_status:
         history = TicketHistory(
             ticket_id=ticket_id,
@@ -198,9 +200,19 @@ def update_ticket(ticket_id):
         )
         db.session.add(history)
         ticket.status = new_status
+        
+        #Send status notification to creator
+        send_ticket_status_notification(ticket, current_user)
     
-    #Update assignee (no history tracking for assignee)
-    ticket.assignee_id = new_assignee_id
+    #Check if assignee changed and send notification
+    if ticket.assignee_id != new_assignee_id:
+        ticket.assignee_id = new_assignee_id
+        
+        #Send assignment notification
+        if new_assignee_id:
+            new_assignee = User.query.get(new_assignee_id)
+            if new_assignee:
+                send_ticket_assigned_notification(ticket, new_assignee, current_user)
     
     db.session.commit()
     flash('Ticket updated successfully!', 'success')
@@ -279,3 +291,64 @@ def get_suggested_response(ticket_id):
         return jsonify({'response': response})
     else:
         return jsonify({'error': 'Could not generate response'}), 500
+
+@main.route('/admin')
+@login_required
+def admin_panel():
+    #Admin panel - only accessible by admins
+    if not current_user.is_admin:
+        flash('Access denied. Admin privileges required.', 'error')
+        return redirect(url_for('main.dashboard'))
+    
+    users = User.query.all()
+    total_tickets = Ticket.query.count()
+    total_users = User.query.count()
+    
+    return render_template('admin.html', users=users, total_tickets=total_tickets, total_users=total_users)
+
+@main.route('/admin/toggle/<int:user_id>', methods=['POST'])
+@login_required
+def toggle_admin(user_id):
+    #Toggle admin status for a user
+    if not current_user.is_admin:
+        flash('Access denied.', 'error')
+        return redirect(url_for('main.dashboard'))
+    
+    user = User.query.get_or_404(user_id)
+    
+    #Prevent removing your own admin status
+    if user.id == current_user.id:
+        flash('Cannot modify your own admin status.', 'error')
+        return redirect(url_for('main.admin_panel'))
+    
+    user.is_admin = not user.is_admin
+    db.session.commit()
+    
+    status = 'admin' if user.is_admin else 'regular user'
+    flash(f'{user.name} is now a {status}.', 'success')
+    return redirect(url_for('main.admin_panel'))
+
+@main.route('/make-me-admin')
+@login_required
+def make_me_admin():
+    #Temporary route - remove after first use
+    if User.query.filter_by(is_admin=True).count() == 0:
+        current_user.is_admin = True
+        db.session.commit()
+        flash('You are now an admin!', 'success')
+    else:
+        flash('Admin already exists.', 'error')
+    return redirect(url_for('main.dashboard'))
+
+@main.route('/admin/emails')
+@login_required
+def email_log():
+    #View sent email notifications
+    if not current_user.is_admin:
+        flash('Access denied.', 'error')
+        return redirect(url_for('main.dashboard'))
+    
+    from app.email_helper import get_sent_emails
+    emails = get_sent_emails()
+    
+    return render_template('email_log.html', emails=emails)

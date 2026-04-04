@@ -28,6 +28,7 @@ class User(UserMixin, db.Model):
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
     is_active = db.Column(db.Boolean, default=True)
+    is_admin = db.Column(db.Boolean, default=False, nullable=False)
     
     #Relationships
     created_tickets = db.relationship(
@@ -71,6 +72,10 @@ class User(UserMixin, db.Model):
         if role not in Role.ALL_ROLES:
             raise ValueError(f"Invalid role. Must be one of: {Role.ALL_ROLES}")
         self.role = role
+    
+    def make_admin(self):
+        #Promote user to admin
+        self.is_admin = True
     
     def __repr__(self):
         return f'<User {self.email} ({self.role})>'

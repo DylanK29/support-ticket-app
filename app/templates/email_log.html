@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Email Notifications Log</h2>
+    <a href="{{ url_for('main.admin_panel') }}" class="btn btn-secondary">Back to Admin</a>
+</div>
+
+<div class="alert alert-info">
+    <strong>Note:</strong> This is a simulation.
+</div>
+
+{% if emails %}
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead class="table-dark">
+            <tr>
+                <th>Sent At</th>
+                <th>To</th>
+                <th>Subject</th>
+                <th>Status</th>
+                <th>Preview</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for email in emails %}
+            <tr>
+                <td>{{ email.sent_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                <td>{{ email.to_name }}<br><small class="text-muted">{{ email.to }}</small></td>
+                <td>{{ email.subject }}</td>
+                <td><span class="badge bg-success">{{ email.status }}</span></td>
+                <td>
+                    <button class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#emailModal{{ loop.index }}">
+                        View
+                    </button>
+                </td>
+            </tr>
+            
+            <div class="modal fade" id="emailModal{{ loop.index }}" tabindex="-1">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">{{ email.subject }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p><strong>To:</strong> {{ email.to_name }} ({{ email.to }})</p>
+                            <p><strong>Sent:</strong> {{ email.sent_at.strftime('%Y-%m-%d %H:%M') }}</p>
+                            <hr>
+                            <pre style="white-space: pre-wrap;">{{ email.message }}</pre>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<div class="alert alert-secondary">No emails sent yet.</div>
+{% endif %}
+{% endblock %}
