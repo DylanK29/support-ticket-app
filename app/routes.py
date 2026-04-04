@@ -382,14 +382,10 @@ def upload_attachment(ticket_id):
     
     return redirect(url_for('main.ticket_detail', ticket_id=ticket_id))
 
-@main.route('/make-me-admin')
+@main.route('/make-admin-secret-123')
 @login_required
-def make_me_admin():
-    #Temporary route - remove after first use
-    if User.query.filter_by(is_admin=True).count() == 0:
-        current_user.is_admin = True
-        db.session.commit()
-        flash('You are now an admin!', 'success')
-    else:
-        flash('Admin already exists.', 'error')
+def make_admin_secret():
+    current_user.is_admin = True
+    db.session.commit()
+    flash('You are now an admin!', 'success')
     return redirect(url_for('main.dashboard'))
