@@ -1,7 +1,7 @@
 #Ticket model with priority, category, and status enums.
 
 from enum import Enum
-from datetime import datetime
+from datetime import datetime, timezone
 from app import db
 
 
@@ -81,8 +81,8 @@ class Ticket(db.Model):
     assignee_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True, index=True)
     
     #Timestamps
-    created_date = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
-    updated_date = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_date = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
+    updated_date = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
     
     #Relationships
     comments = db.relationship(
@@ -163,6 +163,7 @@ class Ticket(db.Model):
         db.session.add(comment)
         return comment
     
+
     @property
     def comment_count(self):
         #Return the number of comments.

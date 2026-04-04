@@ -1,6 +1,6 @@
 #Ticket history model for tracking status changes.
 
-from datetime import datetime
+from datetime import datetime, timezone
 from app import db
 from app.models.ticket import Status
 
@@ -31,7 +31,7 @@ class TicketHistory(db.Model):
     new_status = db.Column(db.Enum(Status), nullable=False)
     
     #Timestamp
-    changed_date = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    changed_date = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     
     #Optional note
     note = db.Column(db.String(500), nullable=True)

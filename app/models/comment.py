@@ -1,5 +1,5 @@
 #Comment model for ticket discussions.
-from datetime import datetime
+from datetime import datetime, timezone
 from app import db
 
 
@@ -29,14 +29,14 @@ class Comment(db.Model):
     user = db.relationship('User', backref='user_comments')
     
     #Timestamps
-    created_date = db.Column(db.DateTime, default=datetime.utcnow, nullable=False)
+    created_date = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     edited_date = db.Column(db.DateTime, nullable=True)
     is_edited = db.Column(db.Boolean, default=False)
     
     def edit(self, new_content):
         #Edit the comment content.
         self.content = new_content
-        self.edited_date = datetime.utcnow()
+        self.edited_date = datetime.now(timezone.utc)
         self.is_edited = True
     
     def can_edit(self, user):
