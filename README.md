@@ -8,17 +8,28 @@ https://support-ticket-app-ftx6.onrender.com
 
 ## Features
 
+### Core Features
 - User registration and authentication
-- Create support tickets with title, description, priority, category, and assignee
-- Dashboard to view all tickets
+- Create support tickets with title, description, priority, and category
+- Assign tickets to team members
+- View all tickets in a dashboard
 - Filter tickets by status
-- Freeform search bar to search tickets by title or description
-- View ticket details
-- Select tickets to update status and assignee, add comments, and track status changes
-- Simulated email notification system
-- Admin access to tickets and emails
-- AI generated label suggestions, ticket summaries, and suggested replies
-- Attachment support
+- Search tickets by title or description
+- View detailed ticket information
+- Update ticket status and assignee
+- Add comments and notes to tickets
+- Track ticket history and status changes
+
+### Bonus Features
+- **Dashboard Metrics** - Visual cards showing ticket counts by status
+- **Loading States** - Visual feedback when submitting forms
+- **Empty States** - Helpful messages when no data exists
+- **Keyboard Shortcuts** - Press 'c' to create ticket, 'd' for dashboard
+- **Role-Based Access** - Admin panel for user management
+- **AI Categorization** - Auto-suggest category and priority using AI
+- **AI Ticket Summary** - Generate concise summaries of tickets
+- **AI Suggested Responses** - Help agents write replies
+- **Email Simulation** - Notification log showing sent emails
 
 ## Technology Stack
 
@@ -29,6 +40,7 @@ https://support-ticket-app-ftx6.onrender.com
 | ORM | SQLAlchemy |
 | Authentication | Flask-Login |
 | Frontend | HTML, Jinja2, Bootstrap 5 |
+| AI | OpenAI GPT-3.5 |
 | Deployment | Render.com |
 
 
@@ -57,6 +69,7 @@ https://support-ticket-app-ftx6.onrender.com
 - Python 3.11
 - Anaconda
 - Git
+- OpenAI API key (for AI features)
 
 ### Installation
 
@@ -78,6 +91,7 @@ https://support-ticket-app-ftx6.onrender.com
 ```bash   
     SECRET_KEY=your-secret-key
     FLASK_ENV=development
+    OPENAI_API_KEY=your-openai-api-key
 ```    
 5. Run the application
 ```bash    
@@ -128,4 +142,10 @@ This app follows a Model-View-Controller pattern:
 | SECRET_KEY | Flask secret key for sessions |
 | DATABASE_URL | PostgreSQL connection string (for production) |
 | FLASK_ENV | For development or production |
-| OPENAI_API_KEY | For accessing Open AI LLM |
+| OPENAI_API_KEY | For accessing AI features |
+
+## Keyboard Shortcuts
+| Key | Action |
+|---------------|---------------|
+| c | Create New Ticket |
+| d | Go to Dashboard |
