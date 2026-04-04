@@ -243,3 +243,19 @@ def suggest_category():
         return jsonify(suggestions)
     else:
         return jsonify({'error': 'Could not get suggestions'}), 500
+    
+@main.route('/api/tickets/<int:ticket_id>/summary', methods=['POST'])
+@login_required
+def get_ticket_summary(ticket_id):
+    #Generate AI summary for a ticket
+    from app.ai_helper import generate_ticket_summary
+    
+    ticket = Ticket.query.get_or_404(ticket_id)
+    comments = [c.content for c in ticket.comments.all()]
+    
+    summary = generate_ticket_summary(ticket.title, ticket.description, comments)
+    
+    if summary:
+        return jsonify({'summary': summary})
+    else:
+        return jsonify({'error': 'Could not generate summary'}), 500

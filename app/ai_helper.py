@@ -69,3 +69,37 @@ def get_ai_suggestions(title, description):
     except Exception as e:
         print(f"AI suggestion error: {e}")
         return None
+
+def generate_ticket_summary(title, description, comments):
+    #Generate a summary of the ticket
+    
+    api_key = os.environ.get('OPENAI_API_KEY')
+    if not api_key:
+        return None
+    
+    try:
+        client = OpenAI(api_key=api_key)
+        
+        comments_text = ""
+        if comments:
+            comments_text = "\n\nComments:\n" + "\n".join([f"- {c}" for c in comments])
+        
+        prompt = f"""Summarize this support ticket in 2-3 sentences:
+
+            Title: {title}
+            Description: {description}{comments_text}
+
+            Provide a concise summary that captures the main issue and current status."""
+
+        response = client.chat.completions.create(
+            model="gpt-3.5-turbo",
+            messages=[{"role": "user", "content": prompt}],
+            max_tokens=150,
+            temperature=0.5
+        )
+        
+        return response.choices[0].message.content.strip()
+    
+    except Exception as e:
+        print(f"AI summary error: {e}")
+        return None

@@ -54,6 +54,54 @@
             </div>
         </div>
 
+        <hr>
+        <div class="mb-3">
+            <button type="button" id="summaryBtn" class="btn btn-outline-info btn-sm">
+                ✨ Generate AI Summary
+            </button>
+            <span id="summaryLoading" class="ms-2 text-muted" style="display: none;">
+                <span class="spinner-border spinner-border-sm"></span> Generating...
+            </span>
+        </div>
+        <div id="summaryResult" class="alert alert-info" style="display: none;"></div>
+
+        <script>
+        document.getElementById('summaryBtn').addEventListener('click', function() {
+            const btn = this;
+            const loading = document.getElementById('summaryLoading');
+            const result = document.getElementById('summaryResult');
+            
+            btn.disabled = true;
+            loading.style.display = 'inline';
+            result.style.display = 'none';
+            
+            fetch('{{ url_for("main.get_ticket_summary", ticket_id=ticket.id) }}', {
+                method: 'POST'
+            })
+            .then(response => response.json())
+            .then(data => {
+                btn.disabled = false;
+                loading.style.display = 'none';
+                
+                if (data.error) {
+                    result.className = 'alert alert-warning';
+                    result.textContent = 'Could not generate summary.';
+                } else {
+                    result.className = 'alert alert-info';
+                    result.innerHTML = '<strong>AI Summary:</strong><br>' + data.summary;
+                }
+                result.style.display = 'block';
+            })
+            .catch(error => {
+                btn.disabled = false;
+                loading.style.display = 'none';
+                result.className = 'alert alert-warning';
+                result.textContent = 'Error generating summary.';
+                result.style.display = 'block';
+            });
+        });
+        </script>
+
         <div class="card mb-4">
             <div class="card-header">Comments</div>
             <div class="card-body">
